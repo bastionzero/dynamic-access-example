@@ -4,9 +4,9 @@ import docker
 from auth import validateSignature
 
 # Define container name
-containerName: str = 'cwc/dynamic-access-ssm-container:latest'
+containerImageName: str = ''
 
-if(containerName == ''):
+if(containerImageName == ''):
     print('Container not specified')
     exit(1)
 
@@ -21,9 +21,9 @@ except:
     exit(1)
 
 
-# Does not have to be a hex string, any utf-8 serialization works
-# Whatever you pasted into the UI should be what you return from
-# this getter function
+# Does not have to be a hex string, any utf-8 string works.
+# Whatever you pasted into the UI should be what you return 
+# in this getter function
 def getBastionZeroSharedSecret() -> str:
     return 'deadbeef'
 
@@ -47,8 +47,8 @@ def start():
     # for the logger
     print(request.headers)
     
-    privateKey = getBastionZeroSharedSecret() # call out to secret store here
-    if(not validateSignature('start', request, privateKey)):
+    sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
+    if(not validateSignature('start', request, sharedSecret)):
         return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
 
     # Parse our activationId, activationRegion and, activationCode
@@ -66,7 +66,7 @@ def start():
         # Start the docker image
         # The docker requires sudo privileges to install the ssm agent to itself on start up
         # NOTE: please change the container name to whatever you build it as
-        resp = client.containers.run(containerName, detach=True, environment=environment, privileged=True)
+        resp = client.containers.run(containerImageName, detach=True, environment=environment, privileged=True)
         
         # Return the containerId
         return jsonify({'containerId': resp.id})
@@ -92,8 +92,8 @@ def stop():
 
     print(request.headers)
 
-    privateKeyHex = getBastionZeroSharedSecret() # call out to secret store here
-    if(not validateSignature('stop', request, privateKeyHex)):
+    sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
+    if(not validateSignature('stop', request, sharedSecret)):
         return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
 
     
