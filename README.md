@@ -59,65 +59,6 @@ The health endpoint acts as a liveliness indicator for BastionZero UI status upd
 { }
 ```
 
-## Authentication Specification
-
-BastionZero provides you the option to authenticate the incoming requests with an
-[HMAC](https://en.wikipedia.org/wiki/HMAC) based signing algorithm. At a high level
-this algorithm canonically orders the critical parts of the http request object and
-produces a signatured using a key derived from the metadata of the http request and 
-a shared secret that you provide to BastionZero when setting up a new Dynamic Access
-Config. The implementation can be found in [`auth.py`](./DynamicAccessServer/auth.py).
-
-```
-// actions = start, stop, or health
-
-// constants
-KEY_PREFIX = 'BZERO'
-SIG_SUFFIX = 'bzero_request'
-ALGO_NAME  = 'HMAC-SHA256'
-
-// Returns byte array
-sign(key, messageString):
-    return HMAC-SHA256(key, GetUtf8Bytes(messageString))
-
-// Returns byte array
-generateSigningKey(sharedSecretString, timeStampInSeconds, actionString):
-    sharedSecretBytes = GetUtf8Bytes(sharedSecretString)
-    prefixBytes = GetUtf8Bytes(KEY_PREFIX)
-    prefixedKeyBytes = contact(prefixBytes, sharedSecretBytes)
-    // three nested signatures
-    derivedSigningKey =  
-        sign(
-            sign(
-                sign(prefixedKeyBytes, timeStampInSeconds),
-            actionString),
-        SIG_SUFFIX)
-
-    return derivedSigningKey
-
-// Returns a boolean
-validateSignature(action, requestObject, sharedSecretString):
-    timeStampInSeconds = request.headers['X-Timestamp']
-    signatureReceived = request.headers['X-Signature']
-
-    derivedSigningKey = generateSigningKey(sharedSecretString, timeStampInSeconds, action)
-    
-    // Serialize with no spaces, no indents, and keys in camel case, get bytes
-    requestJsonBytes = GetUtf8Bytes(json.serialize(request.json))
-    requestBytesHashedHex = SHA256(requestJsonBytes).toHexDigest()
-
-    canonicalOrdering = 
-        ALGO_NAME           + '\n' +    // concatenate   
-        timeStampInSeconds  + '\n' + 
-        action              + '/'  +    // yes a forward slash
-        SIG_SUFFIX          + '\n' +
-        requestBytesHashedHex // END OF LINE
-    
-    derivedSignature = sign(derivedSigningKey, canonicalOrdering)
-    return signatureReceived == derivedSignature
-
-```
-
 ## Development Recommendations
 
 For testing out the dynamic-access-server we recommend running the server within a python virtual environment.
