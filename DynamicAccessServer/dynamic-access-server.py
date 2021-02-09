@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
 import docker
-from auth import validateSignature
+# from auth import validateSignature
 
 # Define container name
 containerImageName: str = ''
@@ -47,9 +47,10 @@ def start():
     # for the logger
     print(request.headers)
     
-    sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
-    if(not validateSignature('start', request, sharedSecret)):
-        return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
+    # Example authentication
+    # sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
+    # if(not validateSignature('start', request, sharedSecret)):
+    #     return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
 
     # Parse our activationId, activationRegion and, activationCode
     requestJSON = request.json
@@ -92,9 +93,10 @@ def stop():
 
     print(request.headers)
 
-    sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
-    if(not validateSignature('stop', request, sharedSecret)):
-        return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
+    # Example authentication
+    # sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
+    # if(not validateSignature('start', request, sharedSecret)):
+    #     return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
 
     
     # Parse out the containerId

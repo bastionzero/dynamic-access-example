@@ -19,14 +19,14 @@ BastionZero hits the Stop endpoint.
 ```json
 // Request
 {
-    activationId: "string",
-    activationRegion: "string",
-    activationCode: "string"
+    "activationId": "string",
+    "activationRegion": "string",
+    "activationCode": "string"
 }
 
 // Response
 {
-    containerId: "string"
+    "containerId": "string"
 }
 ```
 
@@ -37,7 +37,7 @@ The stop endpoint is responsible for tearing down the container.
 ```json
 // Request
 {
-    containerId: "string"
+    "containerId": "string"
 }
 
 // Response
