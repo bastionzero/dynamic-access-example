@@ -1,9 +1,0 @@
-{
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "python.envFile": "${workspaceFolder}/dynamic-access-virtualenv",
-    "python.venvPath": "./dynamic-access-virtualenv",
-    "python.venvFolders": [
-        "*-virtualenv"
-    ]
-}
