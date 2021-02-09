@@ -1,20 +1,25 @@
 # dynamic-access-example
 
-## What this is
+Bastionzero is a simple to use zero trust access SaaS for dynamic cloud environments. Bastionzero is the most secure way to lock down remote access to servers, containers, clusters, and VM’s in any cloud, public or private. For more information go to [Bastionzero](https://bastionzero.com).
 
-BASTION ZERO COPY TEXT AND DYNAMIC ACCESS COPY TEXT
+## Dynamic Access Target
+
+Bastionzero targets are resources that a user can log into, such as a server, container, or virtual machine.  Dynamic Access Targets are types of targets created as a result of a policy decision, such as a user access request.   When a user exits or logs off the target the Dynamic Access Target is torn down.  All of this is achievable through the use of web hooks.
+
+This code repository provides a reference implementation of the web hook server and API for integrating with Bastionzero Dynamic Access Targets.
+
 
 ## API Specification
 
 ### POST Start 
 
-The start endpoint is responsible for spinning up a container with the BastionZero
+The start endpoint is responsible for spinning up a container with the Bastionzero
 agent on it and passing in the following environment variables into the container to
 be consumed by the [`entrypoint.sh`](SsmDockerContainer/EntryScript/entrypoint.sh).
 
 The `containerId` returned does not have to be the docker's container id, rather it
 can be any reference id that will be returned to the provisioning server when 
-BastionZero hits the Stop endpoint.
+Bastionzero hits the Stop endpoint.
 
 ```json
 // Request
@@ -48,7 +53,7 @@ The stop endpoint is responsible for tearing down the container.
 
 ### GET Health
 
-The health endpoint acts as a liveliness indicator for BastionZero UI status updates.
+The health endpoint acts as a liveliness indicator for Bastionzero UI status updates.
 
 ```json
 // Request 
