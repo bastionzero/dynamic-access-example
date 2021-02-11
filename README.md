@@ -11,6 +11,18 @@ This code repository provides a reference implementation of the web hook server 
 
 ## API Specification
 
+### Authentication
+
+Bastionzero requires the provisioning server to use https.
+
+All requests contain an `Authorization` header that will include the base64 string provided to
+Bastionzero in the Add Dynamic Access Config UI. Bastionzero will include the same base64 string
+in all requests made to the provisioning server using the Basic scheme.
+
+```
+Authentication: 'Basic <Base64String>'
+```
+
 ### POST Start 
 
 The start endpoint is responsible for spinning up a container with the Bastionzero

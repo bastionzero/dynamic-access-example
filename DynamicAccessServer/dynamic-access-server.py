@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
 import docker
-# from auth import validateSignature
 
 # Define container name
 containerImageName: str = ''
@@ -16,16 +15,32 @@ app = Flask(__name__)
 # Make a connection to our docker client
 try:
     client = docker.from_env()
+    # uncomment following line to clean up stopped containers on restart
+    # client.containers.prune() # clean up stopped containers
 except:
     print('Docker is likely not running or unreachable')
     exit(1)
 
 
-# Does not have to be a hex string, any utf-8 string works.
-# Whatever you pasted into the UI should be what you return 
-# in this getter function
+# Base64 string that you pasted into the UI
 def getBastionZeroSharedSecret() -> str:
-    return 'deadbeef'
+    return 'Y29vbGJlYW5z'
+
+# Authentication middleware
+@app.before_request
+def auth():
+    print(request.headers)
+
+    # skip auth header for health check
+    if(not request.url.find('/health')):
+        sharedSecret = getBastionZeroSharedSecret() # Call out to secret store here
+        # Header parsing
+        # Authentication: 'Basic <Base64String>'
+        receivedSecret = request.headers.get('Authentication').split(' ')[1]
+        # Python preforms sequence equals here
+        if(receivedSecret is not None and receivedSecret != sharedSecret):
+            return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
+
 
 @app.route('/start', methods=['POST'])
 def start(): 
@@ -44,14 +59,6 @@ def start():
         containerId: string
     }
     """
-    # for the logger
-    print(request.headers)
-    
-    # Example authentication
-    # sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
-    # if(not validateSignature('start', request, sharedSecret)):
-    #     return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
-
     # Parse our activationId, activationRegion and, activationCode
     requestJSON = request.json
     activationId, activationRegion, activationCode = requestJSON['activationId'], requestJSON['activationRegion'], requestJSON['activationCode']
@@ -90,15 +97,6 @@ def stop():
     HTTP 200
     { } // empty body
     """
-
-    print(request.headers)
-
-    # Example authentication
-    # sharedSecret = getBastionZeroSharedSecret() # call out to secret store here
-    # if(not validateSignature('start', request, sharedSecret)):
-    #     return jsonify({'ErrorMessage': 'Authentication failed'}), 401 # return unauthorized to BastionZero
-
-    
     # Parse out the containerId
     requestJSON = request.json
     containerId = requestJSON['containerId']
@@ -113,8 +111,7 @@ def stop():
 
 
     try:
-        # Stop the container
-        container.stop()
+        container.stop() # Stop the container
         
         # Return the containerId
         return jsonify({})
@@ -133,7 +130,8 @@ def health():
     """
     try:
         info = client.info()
-        print(info)
+        # The following print is a little spammy
+        # print(info)
     except docker.errors.APIError as ex:
         print(f'Docker is likely not running, {ex}')
         return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
