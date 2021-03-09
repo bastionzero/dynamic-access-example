@@ -23,6 +23,8 @@ RUN chmod -R 777 /EntryScript
 # ACTIVATION_ID
 # ACTIVATION_CODE
 # ACTIVATION_REGION
+# ORG_ID
+# ORG_PROVIDER
 
 # Docker allows you pass in env vars via the cli with the following syntax
 # -e ACTIVATION_REGION='us-east-1' -e ANOTHER_VAR='data'
