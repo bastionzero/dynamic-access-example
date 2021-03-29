@@ -51,7 +51,9 @@ def start():
     {
         activationId: string,
         activationRegion: string,
-        activationCode: string
+        activationCode: string,
+        orgId: string,
+        orgProvider: string
     }
 
     response:
@@ -61,13 +63,15 @@ def start():
     """
     # Parse our activationId, activationRegion and, activationCode
     requestJSON = request.json
-    activationId, activationRegion, activationCode = requestJSON['activationId'], requestJSON['activationRegion'], requestJSON['activationCode']
+    activationId, activationRegion, activationCode, orgId, orgProvider = requestJSON['activationId'], requestJSON['activationRegion'], requestJSON['activationCode'], requestJSON['orgId'], requestJSON['orgProvider']
 
     # Define our environment variables
     environment = {
         'ACTIVATION_ID': activationId,
         'ACTIVATION_REGION': activationRegion, 
-        'ACTIVATION_CODE': activationCode
+        'ACTIVATION_CODE': activationCode,
+        'ORG_ID': orgId,
+        'ORG_PROVIDER': orgProvider
     }
 
     try:

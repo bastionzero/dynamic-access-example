@@ -13,9 +13,17 @@ if [ -z "$ACTIVATION_REGION" ];
 then
     echo "ACTIVATION_REGION variable is is empty"
 fi 
+if [ -z "$ORG_ID" ];
+then
+    echo "ORG_ID variable is is empty"
+fi 
+if [ -z "$ORG_PROVIDER" ];
+then
+    echo "ORG_PROVIDER variable is is empty"
+fi 
 
 echo "*** Registering the instance using the clunk80 SSM Agent ***"
-sudo clunk80-ssm-agent -register -code $ACTIVATION_CODE -id $ACTIVATION_ID -region $ACTIVATION_REGION
+sudo bzero-ssm-agent -register -code $ACTIVATION_CODE -id $ACTIVATION_ID -region $ACTIVATION_REGION -org $ORG_ID -orgProvider $ORG_PROVIDER
 
 echo "*** Restarting the clunk80 SSM Agent ***"
-clunk80-ssm-agent
+bzero-ssm-agent
