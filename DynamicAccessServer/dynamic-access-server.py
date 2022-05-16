@@ -3,7 +3,8 @@ import requests
 import docker
 
 # Define container name
-containerImageName: str = ''
+containerImageName: str = 'bzero/dynamic-access-example'
+serviceUrl: str = 'https://cloud.bastionzero.com'
 
 if(containerImageName == ''):
     print('Container not specified')
@@ -49,29 +50,27 @@ def start():
 
     request:
     {
-        activationId: string,
-        activationRegion: string,
-        activationCode: string,
-        orgId: string,
-        orgProvider: string
+        activationToken: string,
+        environmentId: string
     }
 
     response:
     {
-        containerId: string
+        uniqueId: string
+        error: bool
+        errorReasonString: string
     }
     """
-    # Parse our activationId, activationRegion and, activationCode
+    # Parse the activationToken and environmentId from the request
     requestJSON = request.json
-    activationId, activationRegion, activationCode, orgId, orgProvider = requestJSON['activationId'], requestJSON['activationRegion'], requestJSON['activationCode'], requestJSON['orgId'], requestJSON['orgProvider']
+    activationToken = requestJSON['activationToken']
+    environmentId = requestJSON['environmentId']
 
     # Define our environment variables
     environment = {
-        'ACTIVATION_ID': activationId,
-        'ACTIVATION_REGION': activationRegion, 
-        'ACTIVATION_CODE': activationCode,
-        'ORG_ID': orgId,
-        'ORG_PROVIDER': orgProvider
+        'ACTIVATION_TOKEN': activationToken,
+        'ENVIRONEMT_ID': environmentId,
+        'SERVICE_URL': serviceUrl
     }
 
     try:
@@ -80,11 +79,11 @@ def start():
         # NOTE: please change the container name to whatever you build it as
         resp = client.containers.run(containerImageName, detach=True, environment=environment, privileged=True)
         
-        # Return the containerId
-        return jsonify({'containerId': resp.id})
+        # Return the containerId as the uniqueId
+        return jsonify({'uniqueId': resp.id})
     except docker.errors.APIError as ex:
         print(f'Docker is likely not running, {ex}')
-        return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
+        return jsonify({'ErrorMessage': f'Error starting the container: {ex}'}), 500 # return 500 to BastionZero
 
 
 @app.route('/stop', methods=['POST'])
@@ -94,7 +93,7 @@ def stop():
 
     request:
     {
-        containerId: string
+        uniqueId: string
     }
 
     response:
@@ -103,15 +102,15 @@ def stop():
     """
     # Parse out the containerId
     requestJSON = request.json
-    containerId = requestJSON['containerId']
+    uniqueId = requestJSON['uniqueId']
 
     # Find the container
     try:
-        container = client.containers.get(containerId)
+        container = client.containers.get(uniqueId)
     except docker.errors.APIError as ex:
         # This probably means the container does not exist locally
         print(f'Docker could not locate the container, {ex}')
-        return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
+        return jsonify({'ErrorMessage': f'Docker could not find the container with id {uniqueId}: {ex}'}), 500 # return 500 to BastionZero
 
 
     try:
@@ -121,7 +120,7 @@ def stop():
         return jsonify({})
     except docker.errors.APIError as ex:
         print(f'Docker is likely not running, {ex}')
-        return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
+        return jsonify({'ErrorMessage': f'Docker failed to start container: {ex}'}), 500 # return 500 to BastionZero
 
 
 # NOTE: unauthenticated for testing purposes
@@ -134,8 +133,7 @@ def health():
     """
     try:
         info = client.info()
-        # The following print is a little spammy
-        # print(info)
+        print('Docker is still running...sending healthy response in health check')
     except docker.errors.APIError as ex:
         print(f'Docker is likely not running, {ex}')
         return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
