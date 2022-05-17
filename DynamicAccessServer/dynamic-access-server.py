@@ -81,7 +81,7 @@ def start():
         
         # Return the containerId as the uniqueId
         return jsonify({'uniqueId': resp.id})
-    except docker.errors.APIError as ex:
+    except Exception as ex:
         print(f'Docker is likely not running, {ex}')
         return jsonify({'ErrorMessage': f'Error starting the container: {ex}'}), 500 # return 500 to BastionZero
 
@@ -107,7 +107,7 @@ def stop():
     # Find the container
     try:
         container = client.containers.get(uniqueId)
-    except docker.errors.APIError as ex:
+    except Exception as ex:
         # This probably means the container does not exist locally
         print(f'Docker could not locate the container, {ex}')
         return jsonify({'ErrorMessage': f'Docker could not find the container with id {uniqueId}: {ex}'}), 500 # return 500 to BastionZero
@@ -115,10 +115,8 @@ def stop():
 
     try:
         container.stop() # Stop the container
-        
-        # Return the containerId
         return jsonify({})
-    except docker.errors.APIError as ex:
+    except Exception as ex:
         print(f'Docker is likely not running, {ex}')
         return jsonify({'ErrorMessage': f'Docker failed to start container: {ex}'}), 500 # return 500 to BastionZero
 
@@ -134,7 +132,7 @@ def health():
     try:
         info = client.info()
         print('Docker is still running...sending healthy response in health check')
-    except docker.errors.APIError as ex:
+    except Exception as ex:
         print(f'Docker is likely not running, {ex}')
         return jsonify({'ErrorMessage': 'Internal System Error'}), 500 # return 500 to BastionZero
 
