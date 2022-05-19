@@ -20,8 +20,8 @@ except:
     print('Docker is likely not running or unreachable')
     exit(1)
 
-
-# Base64 string that you pasted into the UI
+# Base64 shared authentication secret string that you should use when
+# configuring this server in the BastionZero WebApp.
 def getBastionZeroSharedSecret() -> str:
     return 'Y29vbGJlYW5z'
 
