@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
-import requests
 import docker
 
 # Define container name
 containerImageName: str = 'bzero/dynamic-access-example'
-serviceUrl: str = 'https://cloud.bastionzero.com'
 
 if(containerImageName == ''):
     print('Container not specified')
@@ -50,6 +48,7 @@ def start():
 
     request:
     {
+        serviceUrl: string,
         activationToken: string,
         environmentId: string
     }
@@ -63,21 +62,21 @@ def start():
     """
     # Parse the activationToken and environmentId from the request
     requestJSON = request.json
+    serviceUrl = requestJSON['serviceUrl']
     activationToken = requestJSON['activationToken']
     environmentId = requestJSON['environmentId']
 
     # Define our environment variables
     environment = {
+        'SERVICE_URL': serviceUrl,
         'ACTIVATION_TOKEN': activationToken,
-        'ENVIRONEMT_ID': environmentId,
-        'SERVICE_URL': serviceUrl
+        'ENVIRONMENT_ID': environmentId
     }
 
     try:
         # Start the docker image
-        # The docker requires sudo privileges to install the ssm agent to itself on start up
         # NOTE: please change the container name to whatever you build it as
-        resp = client.containers.run(containerImageName, detach=True, environment=environment, privileged=True)
+        resp = client.containers.run(containerImageName, detach=True, environment=environment)
         
         # Return the containerId as the uniqueId
         return jsonify({'uniqueId': resp.id})
