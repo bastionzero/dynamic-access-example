@@ -9,13 +9,13 @@ if [ -z "$SERVICE_URL" ];
 then
     echo "SERVICE_URL variable is is empty"
 fi 
-if [ -z "$ENVIRONEMT_ID" ];
+if [ -z "$ENVIRONMENT_ID" ];
 then
-    echo "ENVIRONEMT_ID variable is is empty"
+    echo "ENVIRONMENT_ID variable is is empty"
 fi
 
 echo "*** Register the BZero target ***"
-bzero-beta -serviceUrl $SERVICE_URL -activationToken $ACTIVATION_TOKEN -environmentId $ENVIRONEMT_ID
+bzero-beta -serviceUrl $SERVICE_URL -activationToken $ACTIVATION_TOKEN -environmentId $ENVIRONMENT_ID
 
 echo "*** Start the BZero agent ***"
 bzero-beta
