@@ -35,7 +35,7 @@ Authentication: 'Basic <Base64String>'
 ### POST Start
 
 The start endpoint is responsible for spinning up a target with the Bastionzero
-agent on it. It should do this by passing the `activationToken` it receives in the start webhook to the `bzero-beta` agent when starting it up. An example of how to start the agent with the `activationToken` can be seen in
+agent on it. It should do this by passing the `activationToken` it receives in the start webhook to the `bzero` agent when starting it up. An example of how to start the agent with the `activationToken` can be seen in
 [`entrypoint.sh`](DynamicAccessContainer/EntryScript/entrypoint.sh).
 
 ```json

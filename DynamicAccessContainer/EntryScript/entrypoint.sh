@@ -15,7 +15,7 @@ then
 fi
 
 echo "*** Register the BZero target ***"
-bzero-beta -serviceUrl $SERVICE_URL -activationToken $ACTIVATION_TOKEN -environmentId $ENVIRONMENT_ID
+bzero -serviceUrl $SERVICE_URL -activationToken $ACTIVATION_TOKEN -environmentId $ENVIRONMENT_ID
 
 echo "*** Start the BZero agent ***"
-bzero-beta
+bzero
