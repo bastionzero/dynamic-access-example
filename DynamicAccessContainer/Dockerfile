@@ -1,6 +1,6 @@
 FROM amazonlinux:2
 
-ARG GIT_BRANCH=feat/service-accounts
+ARG GIT_BRANCH=feat/onelogin-integration
 ARG PACKAGE_NAME=bzero
 
 # install system dependencies and bzero agent
