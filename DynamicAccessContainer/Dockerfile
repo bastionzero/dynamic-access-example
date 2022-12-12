@@ -12,8 +12,8 @@ RUN yum update -y && \
 
 # install go
 RUN mkdir go-download && cd go-download && \
-    wget https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz -q && \
-    tar -xvf go1.16.4.linux-amd64.tar.gz && \
+    wget https://dl.google.com/go/go1.18.8.linux-amd64.tar.gz -q && \
+    tar -xvf go1.18.8.linux-amd64.tar.gz && \
     rm -rf /usr/local/go && \
     mv go /usr/local
 
